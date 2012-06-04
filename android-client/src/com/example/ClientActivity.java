@@ -51,7 +51,7 @@ public class ClientActivity extends Activity implements View.OnClickListener {
         GitHubClient client = new GitHubClient();
         client.setCredentials(loginEdit.getText().toString(), passwordEdit.getText().toString());
 
-        StringBuilder  builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         try {
             RepositoryService service = new RepositoryService(client);
             for (Repository repo : service.getRepositories(client.getUser()))
