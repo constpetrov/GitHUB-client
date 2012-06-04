@@ -1,6 +1,7 @@
 package com.example;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,8 +51,8 @@ public class ClientActivity extends Activity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.submitLogin: {
                 saveSettings();
-//                Toast.makeText(getApplicationContext(), loginEdit.getText() + " " + passwordEdit.getText(), Toast.LENGTH_LONG).show();
                 getSomeInfo();
+                startActivity(new Intent(this, RepoListActivity.class));
                 break;
             }
             default: {
