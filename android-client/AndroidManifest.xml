@@ -19,6 +19,7 @@
         </activity>
         <activity android:name=".RepoListActivity"/>
         <activity android:name=".RepoDetailsActivity" android:label="Details"/>
+        <activity android:name=".CommitActivity" android:label="Commits history"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>

@@ -1,7 +1,10 @@
 package com.example;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.eclipse.egit.github.core.Repository;
@@ -30,7 +33,18 @@ public class RepoDetailsActivity extends Activity {
                     + "Forks: " + repository.getForks() + "\n"
                     + "Watchers: " + repository.getWatchers());
             text.setTextSize(20);
+            Button seeCommits = new Button(this);
+            seeCommits.setText("See commits for this repo");
+            seeCommits.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent showCommitsIntent = new Intent(RepoDetailsActivity.this, CommitActivity.class);
+                    showCommitsIntent.putExtra(CommitActivity.class.getCanonicalName(), repository);
+                    startActivity(showCommitsIntent);
+                }
+            });
             layout.addView(text);
+            layout.addView(seeCommits);
         }
         setContentView(layout);
     }
