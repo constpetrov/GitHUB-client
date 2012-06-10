@@ -21,7 +21,7 @@ public class RepoListActivity extends Activity {
         for(int i = 0; i< 4; i++){
             texts[i] = new TextView(getApplicationContext());
             texts[i].setText("TextView #" + i);
-            texts[i].setTextSize(0.5f * (i+1));
+            texts[i].setTextSize(5f * (i+1));
         }
 
         for(TextView view:texts){
