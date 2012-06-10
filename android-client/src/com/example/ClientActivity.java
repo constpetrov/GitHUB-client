@@ -51,7 +51,7 @@ public class ClientActivity extends Activity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.submitLogin: {
                 saveSettings();
-                getSomeInfo();
+//                getSomeInfo();
                 startActivity(new Intent(this, RepoListActivity.class));
                 break;
             }
