@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.client.GitHubClient;
@@ -30,9 +33,10 @@ public class TemplateActivity extends Activity {
     protected static final TreeMap<String, LinkedList<Repository>> userRepos = new TreeMap<String, LinkedList<Repository>>();
     protected static final TreeMap<String, LinkedList<RepositoryCommit>> repoCommits = new TreeMap<String, LinkedList<RepositoryCommit>>();
     protected String TAG = "github-client/Activity";
+    protected static final int REFRESH_MENU_ITEM = 1;
     protected final static Object persistenceFileLock = new Object();
     private static final String PROGRAM_MAIN_FOLDER = "/github-client";
-
+    protected static GitHubClient client;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,22 +46,16 @@ public class TemplateActivity extends Activity {
         if(userRepos.size() == 0){
             userRepos.putAll(readPersistentRepos());
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        if(userPics.size() == 0){
-            try {
-                savePersistentPics();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to save userPics",e);
-            }
+        if(repoCommits.size() == 0){
+            repoCommits.putAll(readPersistentCommits());
         }
-        super.onDestroy();
     }
 
     protected Bitmap getUserPicture(GitHubClient client, String username) {
-        if(userPics.containsKey(username) && userPics.get(username) != null){
+        if(username == null){
+            Log.e(TAG, "Commit without commiter name");
+        }
+        if(userPics.containsKey(username) /*&& userPics.get(username) != null*/){
             return userPics.get(username);
         } else {
             UserService service = new UserService(client);
@@ -82,14 +80,18 @@ public class TemplateActivity extends Activity {
     }
 
     protected GitHubClient createClientFromPreferences() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String login = prefs.getString("savedLogin", "");
-        String password = prefs.getString("savedPassword", "");
-
-        GitHubClient client = new GitHubClient();
-        client.setCredentials(login, password);
-
+        if(client == null){
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            String login = prefs.getString("savedLogin", "");
+            String password = prefs.getString("savedPassword", "");
+            client = new GitHubClient();
+            client.setCredentials(login, password);
+        }
         return client;
+    }
+
+    protected void removeClient(){
+        client = null;
     }
 
     private void savePersistentPics() throws IOException {
@@ -97,8 +99,10 @@ public class TemplateActivity extends Activity {
         synchronized (userPics) {
             for (Map.Entry<String, Bitmap> entry : userPics.entrySet()){
                 Bitmap bmp = entry.getValue();
-                FileOutputStream out = new FileOutputStream(getPersistenceStoragePath() + "/" + entry.getKey()+ ".png");
-                bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+                if(bmp != null){
+                    FileOutputStream out = new FileOutputStream(getPersistenceStoragePath() + "/" + entry.getKey()+ ".png");
+                    bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+                }
             }
         }
     }
@@ -169,6 +173,57 @@ public class TemplateActivity extends Activity {
         return values;
     }
 
+    protected void savePersistentCommits() throws IOException {
+        Log.i(TAG, "saveUserCommits(" + repoCommits.size() + ")");
+        synchronized (repoCommits) {
+            //create store directory just in case
+            new File(getPersistenceStoragePath()).mkdirs();
+            final File file = getRepoCommitsFile();
+            final File tmpFile = getRepoCommitsFileTmp();
+
+            ObjectOutputStream os = null;
+            try {
+                os = new ObjectOutputStream(new FileOutputStream(tmpFile));
+                os.writeObject(repoCommits);
+                os.close();
+                os = null;
+                file.delete();
+                if (!tmpFile.renameTo(file)){
+                    Log.e(TAG, "Failed to saveUserCommits()");
+                }
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
+
+        }
+    }
+
+    public TreeMap<String, LinkedList<RepositoryCommit>> readPersistentCommits(){
+        TreeMap<String, LinkedList<RepositoryCommit>> values = new TreeMap<String, LinkedList<RepositoryCommit>>();
+        synchronized (persistenceFileLock) {
+            try{
+                if (getRepoCommitsFile().exists()) {
+                    ObjectInputStream is = null;
+                    try {
+                        is = new ObjectInputStream(new FileInputStream(getRepoCommitsFile()));
+                        values = (TreeMap<String, LinkedList<RepositoryCommit>>) is.readObject();
+                    } finally {
+                        if (is!=null){
+                            is.close();
+                        }
+                    }
+                }
+            }catch (ClassNotFoundException e){
+                Log.e(TAG, "Cannot find file", e);
+            }catch (IOException e){
+                Log.e(TAG, "Cannot read file", e);
+            }
+        }
+        return values;
+    }
+
     private File getUserReposFile() {
         return new File(getPersistenceStoragePath(), "userRepos.bin");
     }
@@ -177,7 +232,27 @@ public class TemplateActivity extends Activity {
         return new File(getPersistenceStoragePath(), "userRepos.tmp");
     }
 
+    private File getRepoCommitsFile() {
+        return new File(getPersistenceStoragePath(), "repoCommits.bin");
+    }
+
+    public File getRepoCommitsFileTmp() {
+        return new File(getPersistenceStoragePath(), "repoCommits.tmp");
+    }
+
     private String getPersistenceStoragePath() {
         return Environment.getExternalStorageDirectory().getAbsolutePath() + PROGRAM_MAIN_FOLDER;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean result = super.onCreateOptionsMenu(menu);
+        MenuItem m;
+
+        if(! (this instanceof ClientActivity)){
+            m = menu.add(0, REFRESH_MENU_ITEM, 0, R.string.reload);
+            m.setIcon(android.R.drawable.ic_menu_compass);
+        }
+        return true;
     }
 }

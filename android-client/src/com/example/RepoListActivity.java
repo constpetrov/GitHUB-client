@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.AndroidCharacter;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
@@ -47,7 +48,7 @@ public class RepoListActivity extends TemplateActivity {
 
         GitHubClient client = createClientFromPreferences();
         GetRepoListTask task = new GetRepoListTask();
-        task.execute(client);
+        task.execute(client, false);
     }
 
     private void createUserRow() {
@@ -89,29 +90,33 @@ public class RepoListActivity extends TemplateActivity {
             });
             repoList.add(repoText);
         }
-
+        layout.removeAllViewsInLayout();
         for (View view : repoList) {
             layout.addView(view);
         }
     }
 
-    private class GetRepoListTask extends AsyncTask<GitHubClient, Integer, LinkedList<Repository>>{
-        private LinkedList<Repository> repos;
+    private class GetRepoListTask extends AsyncTask<Object, Integer, LinkedList<Repository>>{
         private ProgressDialog dialog;
         @Override
-        protected LinkedList<Repository> doInBackground(GitHubClient... gitHubClients) {
-            repos = userRepos.get(gitHubClients[0].getUser());
-            if(repos == null || RELOAD_FROM_SERVER){
+        protected LinkedList<Repository> doInBackground(Object... objects) {
+
+            Boolean reloadFromServer = (Boolean)objects[1];
+            GitHubClient client = (GitHubClient) objects[0];
+            LinkedList<Repository> repos = userRepos.get(client.getUser());
+            if(repos == null || reloadFromServer){
+                userPics.clear();
                 repos = new LinkedList<Repository>();
-                getUserPicture(gitHubClients[0], gitHubClients[0].getUser());
-                RepositoryService service = new RepositoryService(gitHubClients[0]);
+
+                getUserPicture(client, client.getUser());
+                RepositoryService service = new RepositoryService(client);
                 try {
                     repos.clear();
                     repos.addAll(service.getRepositories());
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while getting list of repositories");
                 }
-                userRepos.put(gitHubClients[0].getUser(), repos);
+                userRepos.put(client.getUser(), repos);
                 try {
                     savePersistentRepos();
                 } catch (IOException e) {
@@ -130,11 +135,24 @@ public class RepoListActivity extends TemplateActivity {
         @Override
         protected void onPostExecute(LinkedList<Repository> o) {
             createUserRow();
-            createRepoList(repos, layout);
+            createRepoList(o, layout);
             dialog.dismiss();
             super.onPostExecute(o);
         }
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case REFRESH_MENU_ITEM:
+                GetRepoListTask task = new GetRepoListTask();
+                task.execute(client, true);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

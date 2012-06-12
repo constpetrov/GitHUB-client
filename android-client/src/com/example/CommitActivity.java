@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,14 +27,13 @@ import java.util.*;
 public class CommitActivity extends TemplateActivity {
     private Repository repository;
     private static final String TAG = "CommitActivity";
-    private boolean RELOAD_FROM_SERVER;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
         setContentView(R.layout.commits);
         GetCommitsListTask task = new GetCommitsListTask();
-        task.execute(repository);
+        task.execute(repository, false);
     }
 
     private LinkedList<RepositoryCommit> loadCommits(Repository repo){
@@ -84,6 +85,7 @@ public class CommitActivity extends TemplateActivity {
 
     private void createCommitsList(Collection<RepositoryCommit> commits) {
         LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
+        layout.removeAllViewsInLayout();
         for(RepositoryCommit commit: commits){
             String author = commit.getCommit().getCommitter().getName();
             String hash = commit.getSha();
@@ -93,15 +95,26 @@ public class CommitActivity extends TemplateActivity {
         }
     }
 
-    private class GetCommitsListTask extends AsyncTask<Repository, Integer, LinkedList<RepositoryCommit>> {
+    private class GetCommitsListTask extends AsyncTask<Object, Integer, LinkedList<RepositoryCommit>> {
         private LinkedList<RepositoryCommit> commits;
         private ProgressDialog dialog;
         @Override
-        protected LinkedList<RepositoryCommit> doInBackground(Repository... repositories) {
-            commits = repoCommits.get(repositories[0].getName());
-            if(commits == null || RELOAD_FROM_SERVER){
-                commits = loadCommits(repositories[0]);
-                repoCommits.put(repositories[0].getName(), commits);
+        protected LinkedList<RepositoryCommit> doInBackground(Object... objects) {
+            Repository repository = (Repository)objects[0];
+            Boolean reloadFromServer = (Boolean)objects[1];
+            commits = repoCommits.get(repository.getName());
+            if(commits == null || reloadFromServer){
+                userPics.clear();
+                commits = loadCommits((Repository)objects[0]);
+                repoCommits.put(repository.getName(), commits);
+                try {
+                    savePersistentCommits();
+                } catch (IOException e) {
+                    Log.e(TAG, "Cannot save commits", e);
+                }
+            }
+            for(RepositoryCommit commit:commits){
+                getUserPicture(createClientFromPreferences(), commit.getCommit().getCommitter().getName());
             }
             return commits;
         }
@@ -115,9 +128,21 @@ public class CommitActivity extends TemplateActivity {
         @Override
         protected void onPostExecute(LinkedList<RepositoryCommit> o) {
             createCommitsList(commits);
-
             dialog.dismiss();
             super.onPostExecute(o);
         }
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case REFRESH_MENU_ITEM:
+                GetCommitsListTask task = new GetCommitsListTask();
+                task.execute(repository, true);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

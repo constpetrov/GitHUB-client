@@ -2,4 +2,5 @@
     <string name="app_name">gitHub client</string>
     <string name="client_activity_caption">gitHub client</string>
     <string name="test_button_caption">Get repos!</string>
+    <string name="reload">Reload from server</string>
 </resources>
