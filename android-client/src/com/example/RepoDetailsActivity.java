@@ -16,7 +16,7 @@ import org.eclipse.egit.github.core.Repository;
  * Time: 19:31
  * To change this template use File | Settings | File Templates.
  */
-public class RepoDetailsActivity extends Activity {
+public class RepoDetailsActivity extends TemplateActivity {
     private Repository repository;
 
     public void onCreate(Bundle savedInstanceState) {

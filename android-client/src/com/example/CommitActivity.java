@@ -25,7 +25,7 @@ import java.util.*;
  * Time: 0:01
  * To change this template use File | Settings | File Templates.
  */
-public class CommitActivity extends Activity {
+public class CommitActivity extends TemplateActivity {
     private Repository repository;
     private static final String TAG = "CommitActivity";
 
@@ -34,21 +34,15 @@ public class CommitActivity extends Activity {
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
         setContentView(R.layout.commits);
         List<RepositoryCommit> commits = loadCommits(repository);
-        Set<String> commiters = new TreeSet<String>();
         LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
 
         for(RepositoryCommit commit: commits){
             String author = commit.getCommit().getCommitter().getName();
-            commiters.add(author);
             String hash = commit.getSha();
             String message = commit.getCommit().getMessage();
             Date date = commit.getCommit().getCommitter().getDate();
             layout.addView(createCommitInfo(date, author, hash, message));
         }
-
-
-
-
     }
 
     private List<RepositoryCommit> loadCommits(Repository repo){
@@ -59,17 +53,6 @@ public class CommitActivity extends Activity {
             Log.e(TAG, "IOException while getting commits history for repository "+ repository.getName());
             return new LinkedList<RepositoryCommit>();
         }
-    }
-
-    private GitHubClient createClientFromPreferences() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String login = prefs.getString("savedLogin", "");
-        String password = prefs.getString("savedPassword", "");
-
-        GitHubClient client = new GitHubClient();
-        client.setCredentials(login, password);
-
-        return client;
     }
 
     private LinearLayout createCommitInfo(Date date, String author, String hash, String message){
@@ -98,7 +81,7 @@ public class CommitActivity extends Activity {
 
         mini.addView(micro);
         ImageView image = new ImageView(this);
-        image.setImageBitmap(RepoListActivity.userpics.get(author));
+        image.setImageBitmap(getUserPicture(createClientFromPreferences(), author));
         mini.addView(image);
         row.addView(mini);
         TextView messageView = new TextView(this);

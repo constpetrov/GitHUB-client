@@ -23,7 +23,7 @@ import java.io.IOException;
  * Time: 21:15
  * To change this template use File | Settings | File Templates.
  */
-public class ClientActivity extends Activity implements View.OnClickListener {
+public class ClientActivity extends TemplateActivity implements View.OnClickListener {
     private EditText loginEdit;
     private EditText passwordEdit;
     private Button submitLogin;
@@ -51,7 +51,6 @@ public class ClientActivity extends Activity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.submitLogin: {
                 saveSettings();
-//                getSomeInfo();
                 startActivity(new Intent(this, RepoListActivity.class));
                 break;
             }
@@ -69,22 +68,5 @@ public class ClientActivity extends Activity implements View.OnClickListener {
             editor.putString("savedPassword", passwordEdit.getText().toString());
             editor.commit();
         }
-    }
-
-    private void getSomeInfo() {
-        GitHubClient client = new GitHubClient();
-        client.setCredentials(loginEdit.getText().toString(), passwordEdit.getText().toString());
-
-        StringBuilder builder = new StringBuilder();
-        try {
-            RepositoryService service = new RepositoryService(client);
-            for (Repository repo : service.getRepositories(client.getUser()))
-                builder.append(repo.getName()).append(" Watchers: ").append(repo.getWatchers()).append("\n");
-
-        } catch (IOException e) {
-            builder.append("We've got IOException!");
-        }
-        Toast.makeText(this, builder.toString(), Toast.LENGTH_LONG).show();
-
     }
 }

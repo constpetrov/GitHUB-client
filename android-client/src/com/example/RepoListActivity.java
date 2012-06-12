@@ -33,9 +33,8 @@ import java.util.concurrent.ExecutionException;
  * Time: 23:36
  * To change this template use File | Settings | File Templates.
  */
-public class RepoListActivity extends Activity {
+public class RepoListActivity extends TemplateActivity {
     private static final String TAG = "RepoList";
-    public static Map<String, Bitmap> userpics = new TreeMap<String, Bitmap>();
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -50,19 +49,6 @@ public class RepoListActivity extends Activity {
 
             layout.addView(view);
         }
-//        setContentView(layout);
-    }
-
-    private GitHubClient createClientFromPreferences() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String login = prefs.getString("savedLogin", "");
-        String password = prefs.getString("savedPassword", "");
-
-        GitHubClient client = new GitHubClient();
-        client.setCredentials(login, password);
-
-        return client;
-
     }
 
     private List<? extends View> createRepoList(GitHubClient client) {
@@ -116,26 +102,6 @@ public class RepoListActivity extends Activity {
             }
         });
 
-    }
-
-    private Bitmap getUserPicture(GitHubClient client, String username) {
-        if(userpics.containsKey(username) && userpics.get(username) != null){
-            return userpics.get(username);
-        } else {
-            UserService service = new UserService(client);
-            Bitmap icon = null;
-            try {
-                String avatarUrl = service.getUser(username).getAvatarUrl();
-                URL newurl = new URL(avatarUrl);
-                icon = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "Can not parse avatar url for user " + username);
-            } catch (IOException e) {
-                Log.e(TAG, "Can not get a connection to server");
-            }
-            userpics.put(username, icon);
-            return icon;
-        }
     }
 
     private class GetRepoListTask extends AsyncTask<GitHubClient, Integer, Collection<Repository>>{
