@@ -80,6 +80,7 @@ public class CommitActivity extends TemplateActivity {
         TextView messageView = new TextView(this);
         messageView.setText(message);
         row.addView(messageView);
+        row.setBackgroundResource(R.drawable.border);
         return row;
     }
 

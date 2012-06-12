@@ -88,6 +88,7 @@ public class RepoListActivity extends TemplateActivity {
                     startActivity(repoDetailsIntent);
                 }
             });
+            repoText.setBackgroundResource(R.drawable.border);
             repoList.add(repoText);
         }
         layout.removeAllViewsInLayout();
