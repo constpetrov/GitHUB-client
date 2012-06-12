@@ -117,9 +117,5 @@ public class CommitActivity extends TemplateActivity {
             dialog.dismiss();
             super.onPostExecute(o);
         }
-
-
-
-
     }
 }
