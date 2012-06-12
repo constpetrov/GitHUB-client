@@ -1,9 +1,13 @@
 package com.example;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import org.eclipse.egit.github.core.Repository;
@@ -23,6 +27,8 @@ public class ClientActivity extends Activity implements View.OnClickListener {
     private EditText loginEdit;
     private EditText passwordEdit;
     private Button submitLogin;
+    private CheckBox saveCred;
+    private SharedPreferences prefs;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,19 +37,37 @@ public class ClientActivity extends Activity implements View.OnClickListener {
         passwordEdit = (EditText) findViewById(R.id.passwordEdit);
         submitLogin = (Button) findViewById(R.id.submitLogin);
         submitLogin.setOnClickListener(this);
+        saveCred = (CheckBox)findViewById(R.id.saveCredentials);
+
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        loginEdit.setText(prefs.getString("savedLogin", ""));
+        passwordEdit.setText(prefs.getString("savedPassword",""));
+        saveCred.setChecked(prefs.getBoolean("saveCred",false));
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.submitLogin: {
-//                Toast.makeText(getApplicationContext(), loginEdit.getText() + " " + passwordEdit.getText(), Toast.LENGTH_LONG).show();
-                getSomeInfo();
+                saveSettings();
+//                getSomeInfo();
+                startActivity(new Intent(this, RepoListActivity.class));
                 break;
             }
             default: {
 
             }
+        }
+    }
+
+    private void saveSettings() {
+        if(saveCred.isChecked()){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("saveCred", true);
+            editor.putString("savedLogin", loginEdit.getText().toString());
+            editor.putString("savedPassword", passwordEdit.getText().toString());
+            editor.commit();
         }
     }
 
