@@ -25,6 +25,7 @@ import java.util.*;
 public class CommitActivity extends TemplateActivity {
     private Repository repository;
     private static final String TAG = "CommitActivity";
+    private boolean RELOAD_FROM_SERVER;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +96,11 @@ public class CommitActivity extends TemplateActivity {
         private ProgressDialog dialog;
         @Override
         protected Collection<RepositoryCommit> doInBackground(Repository... repositories) {
-            commits = loadCommits(repositories[0]);
+            commits = repoCommits.get(repositories[0].getName());
+            if(commits == null || RELOAD_FROM_SERVER){
+                commits = loadCommits(repositories[0]);
+                repoCommits.put(repositories[0].getName(), commits);
+            }
             return commits;
         }
 

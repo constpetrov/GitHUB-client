@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutionException;
 public class RepoListActivity extends TemplateActivity {
     private static final String TAG = "RepoList";
     LinearLayout layout;
+    private boolean RELOAD_FROM_SERVER;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
@@ -98,13 +100,17 @@ public class RepoListActivity extends TemplateActivity {
         private ProgressDialog dialog;
         @Override
         protected Collection<Repository> doInBackground(GitHubClient... gitHubClients) {
-            repos = new LinkedList<Repository>();
-            getUserPicture(gitHubClients[0], gitHubClients[0].getUser());
-            RepositoryService service = new RepositoryService(gitHubClients[0]);
-            try {
-                repos = service.getRepositories();
-            } catch (IOException e) {
-                Log.e(TAG, "IOException while getting list of repositories");
+            repos = userRepos.get(gitHubClients[0].getUser());
+            if(repos == null || RELOAD_FROM_SERVER){
+                repos = new LinkedList<Repository>();
+                getUserPicture(gitHubClients[0], gitHubClients[0].getUser());
+                RepositoryService service = new RepositoryService(gitHubClients[0]);
+                try {
+                    repos = service.getRepositories();
+                } catch (IOException e) {
+                    Log.e(TAG, "IOException while getting list of repositories");
+                }
+                userRepos.put(gitHubClients[0].getUser(), repos);
             }
             return repos;
         }

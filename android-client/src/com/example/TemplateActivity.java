@@ -6,12 +6,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import org.eclipse.egit.github.core.Repository;
+import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.UserService;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,6 +28,8 @@ import java.util.TreeMap;
  */
 public class TemplateActivity extends Activity {
     protected static Map<String, Bitmap> userpics = new TreeMap<String, Bitmap>();
+    protected static Map<String, Collection<Repository>> userRepos = new TreeMap<String, Collection<Repository>>();
+    protected static Map<String, Collection<RepositoryCommit>> repoCommits = new TreeMap<String, Collection<RepositoryCommit>>();
     protected String TAG = "github-client/Activity";
 
     protected Bitmap getUserPicture(GitHubClient client, String username) {
