@@ -1,9 +1,8 @@
 package com.example;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,8 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryCommit;
-import org.eclipse.egit.github.core.Tag;
-import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.CommitService;
 
 import java.io.IOException;
@@ -33,16 +30,8 @@ public class CommitActivity extends TemplateActivity {
         super.onCreate(savedInstanceState);
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
         setContentView(R.layout.commits);
-        List<RepositoryCommit> commits = loadCommits(repository);
-        LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
-
-        for(RepositoryCommit commit: commits){
-            String author = commit.getCommit().getCommitter().getName();
-            String hash = commit.getSha();
-            String message = commit.getCommit().getMessage();
-            Date date = commit.getCommit().getCommitter().getDate();
-            layout.addView(createCommitInfo(date, author, hash, message));
-        }
+        GetRepoListTask task = new GetRepoListTask();
+        task.execute(repository);
     }
 
     private List<RepositoryCommit> loadCommits(Repository repo){
@@ -88,5 +77,44 @@ public class CommitActivity extends TemplateActivity {
         messageView.setText(message);
         row.addView(messageView);
         return row;
+    }
+
+    private void createCommitsList(Collection<RepositoryCommit> commits) {
+        LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
+        for(RepositoryCommit commit: commits){
+            String author = commit.getCommit().getCommitter().getName();
+            String hash = commit.getSha();
+            String message = commit.getCommit().getMessage();
+            Date date = commit.getCommit().getCommitter().getDate();
+            layout.addView(createCommitInfo(date, author, hash, message));
+        }
+    }
+
+    private class GetRepoListTask extends AsyncTask<Repository, Integer, Collection<RepositoryCommit>> {
+        private Collection<RepositoryCommit> commits;
+        private ProgressDialog dialog;
+        @Override
+        protected Collection<RepositoryCommit> doInBackground(Repository... repositories) {
+            commits = loadCommits(repositories[0]);
+            return commits;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog = ProgressDialog.show(CommitActivity.this, "List of commits","Loading...");
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Collection<RepositoryCommit> o) {
+            createCommitsList(commits);
+
+            dialog.dismiss();
+            super.onPostExecute(o);
+        }
+
+
+
+
     }
 }

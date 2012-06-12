@@ -1,6 +1,8 @@
 package com.example;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -35,55 +37,19 @@ import java.util.concurrent.ExecutionException;
  */
 public class RepoListActivity extends TemplateActivity {
     private static final String TAG = "RepoList";
+    LinearLayout layout;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.repolist);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.repoListLayout);
+        layout = (LinearLayout) findViewById(R.id.repoListLayout);
 
         GitHubClient client = createClientFromPreferences();
-        createUserRow(client);
-        List<? extends View> infoList = createRepoList(client);
-
-        for (View view : infoList) {
-
-            layout.addView(view);
-        }
-    }
-
-    private List<? extends View> createRepoList(GitHubClient client) {
-        List<View> repoList = new LinkedList<View>();
         GetRepoListTask task = new GetRepoListTask();
         task.execute(client);
-        Collection<Repository> repositories = null;
-        try {
-            repositories = task.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ExecutionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        assert repositories != null;
-        for (final Repository repo : repositories) {
-            TextView repoText = new TextView(getApplicationContext());
-            repoText.setTextSize(24f);
-            repoText.setText(repo.getName());
-            repoText.setHighlightColor(android.R.color.white);
-            repoText.setTypeface(Typeface.DEFAULT_BOLD);
-            repoText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent repoDetailsIntent = new Intent(RepoListActivity.this, RepoDetailsActivity.class);
-                    repoDetailsIntent.putExtra(RepoDetailsActivity.class.getCanonicalName(), repo);
-                    startActivity(repoDetailsIntent);
-                }
-            });
-            repoList.add(repoText);
-        }
-        return repoList;
     }
 
-    private void createUserRow(GitHubClient client) {
+    private void createUserRow() {
+        GitHubClient client = createClientFromPreferences();
         ImageView image = (ImageView) findViewById(R.id.repoListPic);
         image.setImageBitmap(getUserPicture(client, client.getUser()));
         image.setOnClickListener(new View.OnClickListener() {
@@ -101,13 +67,39 @@ public class RepoListActivity extends TemplateActivity {
                 startActivity(new Intent(RepoListActivity.this, ClientActivity.class));
             }
         });
+    }
 
+    private void createRepoList(Collection<Repository> repos, LinearLayout layout) {
+        List<View> repoList = new LinkedList<View>();
+        for (final Repository repo : repos) {
+            TextView repoText = new TextView(getApplicationContext());
+            repoText.setTextSize(24f);
+            repoText.setText(repo.getName());
+            repoText.setHighlightColor(android.R.color.white);
+            repoText.setTypeface(Typeface.DEFAULT_BOLD);
+            repoText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent repoDetailsIntent = new Intent(RepoListActivity.this, RepoDetailsActivity.class);
+                    repoDetailsIntent.putExtra(RepoDetailsActivity.class.getCanonicalName(), repo);
+                    startActivity(repoDetailsIntent);
+                }
+            });
+            repoList.add(repoText);
+        }
+
+        for (View view : repoList) {
+            layout.addView(view);
+        }
     }
 
     private class GetRepoListTask extends AsyncTask<GitHubClient, Integer, Collection<Repository>>{
+        private Collection<Repository> repos;
+        private ProgressDialog dialog;
         @Override
         protected Collection<Repository> doInBackground(GitHubClient... gitHubClients) {
-            Collection<Repository> repos = new LinkedList<Repository>();
+            repos = new LinkedList<Repository>();
+            getUserPicture(gitHubClients[0], gitHubClients[0].getUser());
             RepositoryService service = new RepositoryService(gitHubClients[0]);
             try {
                 repos = service.getRepositories();
@@ -119,14 +111,18 @@ public class RepoListActivity extends TemplateActivity {
 
         @Override
         protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility(true);
+            dialog = ProgressDialog.show(RepoListActivity.this, "List of repositories","Loading...");
             super.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(Collection<Repository> o) {
-            setProgressBarIndeterminateVisibility(false);
+            createUserRow();
+            createRepoList(repos, layout);
+            dialog.dismiss();
             super.onPostExecute(o);
         }
+
+
     }
 }
