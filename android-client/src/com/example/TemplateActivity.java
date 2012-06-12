@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,14 +26,14 @@ import java.util.TreeMap;
  * To change this template use File | Settings | File Templates.
  */
 public class TemplateActivity extends Activity {
-    protected static Map<String, Bitmap> userpics = new TreeMap<String, Bitmap>();
+    protected static Map<String, Bitmap> userPics = new TreeMap<String, Bitmap>();
     protected static Map<String, Collection<Repository>> userRepos = new TreeMap<String, Collection<Repository>>();
     protected static Map<String, Collection<RepositoryCommit>> repoCommits = new TreeMap<String, Collection<RepositoryCommit>>();
     protected String TAG = "github-client/Activity";
 
     protected Bitmap getUserPicture(GitHubClient client, String username) {
-        if(userpics.containsKey(username) && userpics.get(username) != null){
-            return userpics.get(username);
+        if(userPics.containsKey(username) && userPics.get(username) != null){
+            return userPics.get(username);
         } else {
             UserService service = new UserService(client);
             Bitmap icon = null;
@@ -47,7 +46,7 @@ public class TemplateActivity extends Activity {
             } catch (IOException e) {
                 Log.e(TAG, "Can not get a connection to server");
             }
-            userpics.put(username, icon);
+            userPics.put(username, icon);
             return icon;
         }
     }

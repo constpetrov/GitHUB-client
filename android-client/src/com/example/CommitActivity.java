@@ -31,7 +31,7 @@ public class CommitActivity extends TemplateActivity {
         super.onCreate(savedInstanceState);
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
         setContentView(R.layout.commits);
-        GetRepoListTask task = new GetRepoListTask();
+        GetCommitsListTask task = new GetCommitsListTask();
         task.execute(repository);
     }
 
@@ -91,7 +91,7 @@ public class CommitActivity extends TemplateActivity {
         }
     }
 
-    private class GetRepoListTask extends AsyncTask<Repository, Integer, Collection<RepositoryCommit>> {
+    private class GetCommitsListTask extends AsyncTask<Repository, Integer, Collection<RepositoryCommit>> {
         private Collection<RepositoryCommit> commits;
         private ProgressDialog dialog;
         @Override
