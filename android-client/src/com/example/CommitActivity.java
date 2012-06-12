@@ -35,10 +35,12 @@ public class CommitActivity extends TemplateActivity {
         task.execute(repository);
     }
 
-    private List<RepositoryCommit> loadCommits(Repository repo){
+    private LinkedList<RepositoryCommit> loadCommits(Repository repo){
         CommitService service = new CommitService(createClientFromPreferences());
         try {
-            return service.getCommits(repo);
+            LinkedList<RepositoryCommit> commits = new LinkedList<RepositoryCommit>();
+            commits.addAll(service.getCommits(repo));
+            return commits;
         } catch (IOException e) {
             Log.e(TAG, "IOException while getting commits history for repository "+ repository.getName());
             return new LinkedList<RepositoryCommit>();
@@ -91,11 +93,11 @@ public class CommitActivity extends TemplateActivity {
         }
     }
 
-    private class GetCommitsListTask extends AsyncTask<Repository, Integer, Collection<RepositoryCommit>> {
-        private Collection<RepositoryCommit> commits;
+    private class GetCommitsListTask extends AsyncTask<Repository, Integer, LinkedList<RepositoryCommit>> {
+        private LinkedList<RepositoryCommit> commits;
         private ProgressDialog dialog;
         @Override
-        protected Collection<RepositoryCommit> doInBackground(Repository... repositories) {
+        protected LinkedList<RepositoryCommit> doInBackground(Repository... repositories) {
             commits = repoCommits.get(repositories[0].getName());
             if(commits == null || RELOAD_FROM_SERVER){
                 commits = loadCommits(repositories[0]);
@@ -111,7 +113,7 @@ public class CommitActivity extends TemplateActivity {
         }
 
         @Override
-        protected void onPostExecute(Collection<RepositoryCommit> o) {
+        protected void onPostExecute(LinkedList<RepositoryCommit> o) {
             createCommitsList(commits);
 
             dialog.dismiss();

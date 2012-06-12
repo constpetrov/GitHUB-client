@@ -95,22 +95,28 @@ public class RepoListActivity extends TemplateActivity {
         }
     }
 
-    private class GetRepoListTask extends AsyncTask<GitHubClient, Integer, Collection<Repository>>{
-        private Collection<Repository> repos;
+    private class GetRepoListTask extends AsyncTask<GitHubClient, Integer, LinkedList<Repository>>{
+        private LinkedList<Repository> repos;
         private ProgressDialog dialog;
         @Override
-        protected Collection<Repository> doInBackground(GitHubClient... gitHubClients) {
+        protected LinkedList<Repository> doInBackground(GitHubClient... gitHubClients) {
             repos = userRepos.get(gitHubClients[0].getUser());
             if(repos == null || RELOAD_FROM_SERVER){
                 repos = new LinkedList<Repository>();
                 getUserPicture(gitHubClients[0], gitHubClients[0].getUser());
                 RepositoryService service = new RepositoryService(gitHubClients[0]);
                 try {
-                    repos = service.getRepositories();
+                    repos.clear();
+                    repos.addAll(service.getRepositories());
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while getting list of repositories");
                 }
                 userRepos.put(gitHubClients[0].getUser(), repos);
+                try {
+                    savePersistentRepos();
+                } catch (IOException e) {
+                    Log.e(TAG, "Cannot save repositories", e);
+                }
             }
             return repos;
         }
@@ -122,7 +128,7 @@ public class RepoListActivity extends TemplateActivity {
         }
 
         @Override
-        protected void onPostExecute(Collection<Repository> o) {
+        protected void onPostExecute(LinkedList<Repository> o) {
             createUserRow();
             createRepoList(repos, layout);
             dialog.dismiss();
