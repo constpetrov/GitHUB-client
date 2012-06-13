@@ -10,6 +10,7 @@
         <ImageView android:layout_height="wrap_content"
                    android:layout_width="wrap_content"
                    android:id="@+id/repoListPic"
+                   android:src="@drawable/icon"
                    android:layout_gravity="left"></ImageView>
         <LinearLayout android:layout_width="fill_parent"
                       android:layout_height="wrap_content"
@@ -19,14 +20,19 @@
             <TextView android:layout_height="wrap_content"
                       android:layout_width="wrap_content"
                       android:id="@+id/repoListUserName"
+                      android:text="qqqqqqqqqqqqqqqqqqq"
                       android:textColor="@android:color/white"></TextView>
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/repoListLayout"
-            android:orientation="vertical"
-            android:layout_margin="6dip">
-    </LinearLayout>
+    <ScrollView android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/repoListLayout"
+                android:orientation="vertical"
+                android:layout_margin="14dip"
+                android:padding="3dp">
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

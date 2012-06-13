@@ -1,12 +1,12 @@
 package com.example;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,7 +27,7 @@ import java.util.*;
 public class CommitActivity extends TemplateActivity {
     private Repository repository;
     private static final String TAG = "CommitActivity";
-
+    private final float TEXT_SIZE = 16;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
@@ -49,39 +49,24 @@ public class CommitActivity extends TemplateActivity {
     }
 
     private LinearLayout createCommitInfo(Date date, String author, String hash, String message){
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.VERTICAL);
-        row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        row.setPadding(0,0,0,8);
+        LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout v = (LinearLayout)vi.inflate(R.layout.commititem, null);
 
-        LinearLayout mini = new LinearLayout(this);
-        mini.setOrientation(LinearLayout.HORIZONTAL);
-        mini.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        LinearLayout micro = new LinearLayout(this);
-        micro.setOrientation(LinearLayout.VERTICAL);
-        micro.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        TextView dateView = new TextView(this);
+        TextView dateView = (TextView) v.findViewById(R.id.commit_date);
         dateView.setText(date.toLocaleString());
-        TextView authorView = new TextView(this);
+
+        TextView authorView = (TextView) v.findViewById(R.id.commit_author);
         authorView.setText(author);
-        TextView hashView = new TextView(this);
+
+        TextView hashView = (TextView) v.findViewById(R.id.commit_hash);
         hashView.setText(hash.substring(0,10));
 
-        micro.addView(dateView);
-        micro.addView(authorView);
-        micro.addView(hashView);
-
-        mini.addView(micro);
-        ImageView image = new ImageView(this);
-        image.setImageBitmap(getUserPicture(createClientFromPreferences(), author));
-        mini.addView(image);
-        row.addView(mini);
-        TextView messageView = new TextView(this);
+        TextView messageView = (TextView) v.findViewById(R.id.commit_message);
         messageView.setText(message);
-        row.addView(messageView);
-        row.setBackgroundResource(R.drawable.border);
-        return row;
+
+        ImageView image = (ImageView)v.findViewById(R.id.commit_userpic);
+        image.setImageBitmap(getUserPicture(createClientFromPreferences(), author));
+        return v;
     }
 
     private void createCommitsList(Collection<RepositoryCommit> commits) {
@@ -92,7 +77,7 @@ public class CommitActivity extends TemplateActivity {
             String hash = commit.getSha();
             String message = commit.getCommit().getMessage();
             Date date = commit.getCommit().getCommitter().getDate();
-            layout.addView(createCommitInfo(date, author, hash, message));
+            layout.addView(createCommitInfo(date, author, hash, message), layout.getChildCount(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
         }
     }
 

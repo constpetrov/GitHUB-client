@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:id="@+id/commit_item">
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:weightSum="1.0">
+
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:gravity="left">
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
+                      android:id="@+id/commit_date"
+                      android:textSize="14dip"
+                      android:textColor="#ffffffff"
+                    android:background="@drawable/border">
+            </TextView>
+
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
+                      android:id="@+id/commit_author"
+                      android:textSize="16dip"
+                      android:textColor="#ffffffff"
+                      android:textStyle="bold">
+            </TextView>
+            <LinearLayout android:layout_height="wrap_content"
+                          android:layout_width="wrap_content"
+                          android:orientation="horizontal"
+                    >
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:text="Hash: "
+                          android:textSize="10dip"
+                        >
+                </TextView>
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:text="qqqqqqqqqqq"
+                          android:id="@+id/commit_hash"
+                          android:textColor="#acd0e0"
+                          android:textSize="16dip">
+                </TextView>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_gravity="center_horizontal">
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@drawable/icon"
+                   android:id="@+id/commit_userpic"
+                   android:textSize="14dip"
+                ></ImageView>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
+              android:id="@+id/commit_message">
+    </TextView>
+
+</LinearLayout>
