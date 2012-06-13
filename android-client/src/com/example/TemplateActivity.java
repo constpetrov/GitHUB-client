@@ -149,6 +149,7 @@ public class TemplateActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public TreeMap<String, LinkedList<Repository>> readPersistentRepos(){
         TreeMap<String, LinkedList<Repository>> values = new TreeMap<String, LinkedList<Repository>>();
         synchronized (persistenceFileLock) {
@@ -200,6 +201,7 @@ public class TemplateActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public TreeMap<String, LinkedList<RepositoryCommit>> readPersistentCommits(){
         TreeMap<String, LinkedList<RepositoryCommit>> values = new TreeMap<String, LinkedList<RepositoryCommit>>();
         synchronized (persistenceFileLock) {
