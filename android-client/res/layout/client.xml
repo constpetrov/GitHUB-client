@@ -7,7 +7,7 @@
               android:orientation="vertical">
     <TextView android:layout_height="wrap_content"
               android:layout_width="fill_parent"
-              android:text="Login:"/>
+              android:text="@string/caption_login"/>
     <EditText android:layout_height="wrap_content"
               android:layout_width="fill_parent"
               android:id="@+id/loginEdit"/>
@@ -22,7 +22,7 @@
                   android:layout_height="wrap_content"
                   android:orientation="horizontal">
         <CheckBox android:id="@+id/saveCredentials"
-                  android:text="Save credentaials"
+                  android:text="@string/caption_save_credentials"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_gravity="left"/>
@@ -32,7 +32,7 @@
             <Button android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:id="@+id/submitLogin"
-                    android:text="@string/test_button_caption"/>
+                    android:text="@string/caption_button_get"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

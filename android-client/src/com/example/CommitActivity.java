@@ -118,17 +118,10 @@ public class CommitActivity extends TemplateActivity {
             super.onPostExecute(o);
         }
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case REFRESH_MENU_ITEM:
-                GetCommitsListTask task = new GetCommitsListTask();
-                task.execute(repository, true);
 
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    @Override
+    protected AsyncTask getNewTask() {
+        return new GetCommitsListTask();
     }
 
 }

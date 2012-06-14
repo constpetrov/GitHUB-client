@@ -3,7 +3,7 @@
           package="com.example">
     <uses-sdk android:minSdkVersion="8"/>
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-        <activity android:name=".ClientActivity" android:label="@string/client_activity_caption">
+        <activity android:name=".ClientActivity" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -17,9 +17,9 @@
                 <data android:scheme="android-client" android:host="oauth.done"></data>
             </intent-filter>
         </activity>
-        <activity android:name=".RepoListActivity"/>
-        <activity android:name=".RepoDetailsActivity" android:label="Details"/>
-        <activity android:name=".CommitActivity" android:label="Commits history"/>
+        <activity android:name=".RepoListActivity" android:label="@string/activity_caption_list"/>
+        <activity android:name=".RepoDetailsActivity" android:label="@string/activity_caption_details"/>
+        <activity android:name=".CommitActivity" android:label="@string/activity_caption_commits"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>

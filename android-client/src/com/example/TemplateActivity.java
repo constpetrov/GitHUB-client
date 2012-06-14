@@ -1,15 +1,23 @@
 package com.example;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryCommit;
@@ -28,7 +36,7 @@ import java.util.*;
  * Time: 13:40
  * To change this template use File | Settings | File Templates.
  */
-public class TemplateActivity extends Activity {
+public abstract class TemplateActivity extends Activity {
     protected static final Map<String, Bitmap> userPics = new TreeMap<String, Bitmap>();
     protected static final TreeMap<String, LinkedList<Repository>> userRepos = new TreeMap<String, LinkedList<Repository>>();
     protected static final TreeMap<String, LinkedList<RepositoryCommit>> repoCommits = new TreeMap<String, LinkedList<RepositoryCommit>>();
@@ -37,6 +45,7 @@ public class TemplateActivity extends Activity {
     protected final static Object persistenceFileLock = new Object();
     private static final String PROGRAM_MAIN_FOLDER = "/github-client";
     protected static GitHubClient client;
+    AsyncTask task;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,10 +260,50 @@ public class TemplateActivity extends Activity {
         boolean result = super.onCreateOptionsMenu(menu);
         MenuItem m;
 
-        if(! (this instanceof ClientActivity)){
+        if(! (this instanceof ClientActivity) && ! (this instanceof RepoDetailsActivity)){
             m = menu.add(0, REFRESH_MENU_ITEM, 0, R.string.reload);
-            m.setIcon(android.R.drawable.ic_menu_compass);
+            m.setIcon(R.drawable.ic_menu_refresh);
         }
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case REFRESH_MENU_ITEM:
+                task = getNewTask();
+                task.execute(client, true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    protected abstract AsyncTask getNewTask();
+
+    protected LinearLayout createUserRow() {
+        LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout data = (LinearLayout)vi.inflate(R.layout.userdata, null);
+
+        GitHubClient client = createClientFromPreferences();
+        ImageView image = (ImageView) data.findViewById(R.id.repoListPic);
+        image.setImageBitmap(getUserPicture(client, client.getUser()));
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), ClientActivity.class));
+            }
+        });
+        TextView clientName = (TextView) data.findViewById(R.id.repoListUserName);
+        clientName.setText(client.getUser());
+        clientName.setTextSize(24f);
+        clientName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), ClientActivity.class));
+            }
+        });
+        return data;
+    }
+
 }

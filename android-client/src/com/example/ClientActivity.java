@@ -3,6 +3,7 @@ package com.example;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -44,6 +45,11 @@ public class ClientActivity extends TemplateActivity implements View.OnClickList
         loginEdit.setText(prefs.getString("savedLogin", ""));
         passwordEdit.setText(prefs.getString("savedPassword",""));
         saveCred.setChecked(prefs.getBoolean("saveCred",false));
+    }
+
+    @Override
+    protected AsyncTask getNewTask() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

@@ -1,33 +1,21 @@
 package com.example;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.text.AndroidCharacter;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.*;
 import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.Tag;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.RepositoryService;
-import org.eclipse.egit.github.core.service.UserService;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,47 +27,25 @@ import java.util.concurrent.ExecutionException;
 public class RepoListActivity extends TemplateActivity {
     private static final String TAG = "RepoList";
     LinearLayout layout;
+
     private boolean RELOAD_FROM_SERVER;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
-        layout = (LinearLayout) findViewById(R.id.repoListLayout);
-
+        layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
+        ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
         GitHubClient client = createClientFromPreferences();
-        GetRepoListTask task = new GetRepoListTask();
+        task = new GetRepoListTask();
         task.execute(client, false);
     }
 
-    private void createUserRow() {
-        GitHubClient client = createClientFromPreferences();
-        ImageView image = (ImageView) findViewById(R.id.repoListPic);
-        image.setImageBitmap(getUserPicture(client, client.getUser()));
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(RepoListActivity.this, ClientActivity.class));
-            }
-        });
-        TextView clientName = (TextView) findViewById(R.id.repoListUserName);
-        clientName.setText(client.getUser());
-        clientName.setTextSize(24f);
-        clientName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(RepoListActivity.this, ClientActivity.class));
-            }
-        });
-    }
-
     private void createRepoList(Collection<Repository> repos, LinearLayout layout) {
-        List<View> repoList = new LinkedList<View>();
+        layout.removeAllViewsInLayout();
+        LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         for (final Repository repo : repos) {
-            TextView repoText = new TextView(getApplicationContext());
-            repoText.setTextSize(24f);
+            TextView repoText = (TextView)vi.inflate(R.layout.repoitem, null);
             repoText.setText(repo.getName());
-            repoText.setHighlightColor(android.R.color.white);
-            repoText.setTypeface(Typeface.DEFAULT_BOLD);
             repoText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -88,12 +54,7 @@ public class RepoListActivity extends TemplateActivity {
                     startActivity(repoDetailsIntent);
                 }
             });
-            repoText.setBackgroundResource(R.drawable.border);
-            repoList.add(repoText);
-        }
-        layout.removeAllViewsInLayout();
-        for (View view : repoList) {
-            layout.addView(view);
+            layout.addView(repoText);
         }
     }
 
@@ -144,16 +105,9 @@ public class RepoListActivity extends TemplateActivity {
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case REFRESH_MENU_ITEM:
-                GetRepoListTask task = new GetRepoListTask();
-                task.execute(client, true);
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    protected AsyncTask getNewTask(){
+        return new GetRepoListTask();
     }
+
+
 }

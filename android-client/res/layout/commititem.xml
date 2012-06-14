@@ -4,54 +4,44 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
-              android:id="@+id/commit_item">
+              android:id="@+id/commit_item"
+              android:paddingBottom="@dimen/commit_padding_size">
     <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:orientation="horizontal"
                   android:weightSum="1.0">
-
         <LinearLayout android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:orientation="vertical"
                       android:gravity="left">
-
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
                       android:id="@+id/commit_date"
-                      android:textSize="14dip"
+                      android:textSize="@dimen/data_size"
                       android:textColor="#ffffffff"
-                    android:background="@drawable/border">
-            </TextView>
-
-
+                    android:background="@drawable/border"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
                       android:id="@+id/commit_author"
-                      android:textSize="16dip"
+                      android:textSize="@dimen/data_size"
                       android:textColor="#ffffffff"
-                      android:textStyle="bold">
-            </TextView>
+                      android:textStyle="bold"/>
             <LinearLayout android:layout_height="wrap_content"
                           android:layout_width="wrap_content"
-                          android:orientation="horizontal"
-                    >
+                          android:orientation="horizontal">
                 <TextView android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
-                          android:text="Hash: "
-                          android:textSize="10dip"
-                        >
-                </TextView>
+                          android:text="@string/commititem_hash"
+                          android:textSize="@dimen/description_size"/>
                 <TextView android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:text="qqqqqqqqqqq"
                           android:id="@+id/commit_hash"
                           android:textColor="#acd0e0"
-                          android:textSize="16dip">
-                </TextView>
+                          android:textSize="@dimen/data_size"/>
             </LinearLayout>
-
         </LinearLayout>
         <LinearLayout android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -60,15 +50,12 @@
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:src="@drawable/icon"
-                   android:id="@+id/commit_userpic"
-                   android:textSize="14dip"
-                ></ImageView>
+                   android:id="@+id/commit_userpic"/>
         </LinearLayout>
     </LinearLayout>
     <TextView android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:text="qqqqqqqqqqqqqqqqqqqqqqqq"
-              android:id="@+id/commit_message">
-    </TextView>
-
+              android:id="@+id/commit_message"
+            android:textSize="@dimen/data_size"/>
 </LinearLayout>

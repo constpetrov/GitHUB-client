@@ -1,6 +1,19 @@
 <resources>
-    <string name="app_name">gitHub client</string>
-    <string name="client_activity_caption">gitHub client</string>
-    <string name="test_button_caption">Get repos!</string>
+    <string name="app_name">Check my hub!</string>
+    <string name="activity_caption_client">gitHub client</string>
+    <string name="caption_button_get">Get repos!</string>
+    <string name="caption_button_commits">See commits for this repo</string>
     <string name="reload">Reload from server</string>
+    <string name="repository_name_caption">repository name:</string>
+    <string name="repository_description_caption">repository description:</string>
+    <string name="repository_forks_caption">forks count:</string>
+    <string name="repository_watchers_caption">watchers count:</string>
+    <string name="commititem_hash">Hash:</string>
+    <string name="repositories_list_caption">repositories:</string>
+    <string name="activity_caption_details">Repository details</string>
+    <string name="activity_caption_commits">Commits history</string>
+    <string name="activity_caption_list">Repositories list</string>
+    <string name="caption_login">Login:</string>
+    <string name="caption_save_credentials">Save credentaials</string>
+
 </resources>
