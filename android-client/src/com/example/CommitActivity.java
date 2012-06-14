@@ -27,7 +27,6 @@ import java.util.*;
 public class CommitActivity extends TemplateActivity {
     private Repository repository;
     private static final String TAG = "github-client/CommitActivity";
-    private final float TEXT_SIZE = 16;
     private ProgressDialog dialog;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

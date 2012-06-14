@@ -29,8 +29,6 @@ public class RepoListActivity extends TemplateActivity {
     private static final String TAG = "github-client/RepoList";
     LinearLayout layout;
 
-    private boolean RELOAD_FROM_SERVER;
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
