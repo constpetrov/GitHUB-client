@@ -81,14 +81,16 @@ public class CommitActivity extends TemplateActivity {
     }
 
     private void createCommitsList(Collection<RepositoryCommit> commits) {
-        LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
-        layout.removeAllViewsInLayout();
-        for(RepositoryCommit commit: commits){
-            String author = commit.getCommit().getCommitter().getName();
-            String hash = commit.getSha();
-            String message = commit.getCommit().getMessage();
-            Date date = commit.getCommit().getCommitter().getDate();
-            layout.addView(createCommitInfo(date, author, hash, message), layout.getChildCount(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+        if(commits != null){
+            LinearLayout layout = (LinearLayout)findViewById(R.id.commitsLayout);
+            layout.removeAllViewsInLayout();
+            for(RepositoryCommit commit: commits){
+                String author = commit.getCommit().getCommitter().getName();
+                String hash = commit.getSha();
+                String message = commit.getCommit().getMessage();
+                Date date = commit.getCommit().getCommitter().getDate();
+                layout.addView(createCommitInfo(date, author, hash, message), layout.getChildCount(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+            }
         }
     }
 

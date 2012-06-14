@@ -67,6 +67,8 @@ public abstract class TemplateActivity extends Activity {
         if(client == null || client.getUser() == null || client.getUser().equals("")){
             return false;
         }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(preferences.getString("savedLogin", "") != client.getUser()) return false;
         return true;
     }
 
@@ -74,27 +76,29 @@ public abstract class TemplateActivity extends Activity {
         if(username == null){
             Log.e(TAG, "Commit without commiter name");
         }
-        if(userPics.containsKey(username) /*&& userPics.get(username) != null*/){
-            return userPics.get(username);
-        } else {
-            UserService service = new UserService(client);
-            Bitmap icon = null;
-            try {
-                String avatarUrl = service.getUser(username).getAvatarUrl();
-                URL newurl = new URL(avatarUrl);
-                icon = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "Can not parse avatar url for user " + username);
-            } catch (IOException e) {
-                Log.e(TAG, "Can not get a connection to server");
+        synchronized (userPics){
+            if(userPics.containsKey(username) /*&& userPics.get(username) != null*/){
+                return userPics.get(username);
+            } else {
+                UserService service = new UserService(client);
+                Bitmap icon = null;
+                try {
+                    String avatarUrl = service.getUser(username).getAvatarUrl();
+                    URL newurl = new URL(avatarUrl);
+                    icon = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "Can not parse avatar url for user " + username);
+                } catch (IOException e) {
+                    Log.e(TAG, "Can not get a connection to server");
+                }
+                userPics.put(username, icon);
+                try {
+                    savePersistentPics();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to save userPics",e);
+                }
+                return icon;
             }
-            userPics.put(username, icon);
-            try {
-                savePersistentPics();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to save userPics",e);
-            }
-            return icon;
         }
     }
 

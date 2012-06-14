@@ -34,9 +34,19 @@ public class RepoListActivity extends TemplateActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
+        layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        client = createClientFromPreferences();
         if(checkClient(client)){
-            layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
-            ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
+            LinearLayout layout = (LinearLayout)findViewById(R.id.repoList);
+            if(layout.getChildCount() == 3){
+                layout.removeViewAt(0);
+            }
+            layout.addView(createUserRow(),0);
             GetRepoListTask task = new GetRepoListTask();
             task.execute(client, false);
         }else {
@@ -56,20 +66,22 @@ public class RepoListActivity extends TemplateActivity {
     }
 
     private void createRepoList(Collection<Repository> repos, LinearLayout layout) {
-        layout.removeAllViewsInLayout();
-        LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        for (final Repository repo : repos) {
-            TextView repoText = (TextView)vi.inflate(R.layout.repoitem, null);
-            repoText.setText(repo.getName());
-            repoText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent repoDetailsIntent = new Intent(RepoListActivity.this, RepoDetailsActivity.class);
-                    repoDetailsIntent.putExtra(RepoDetailsActivity.class.getCanonicalName(), repo);
-                    startActivity(repoDetailsIntent);
-                }
-            });
-            layout.addView(repoText);
+        if(repos!=null){
+            layout.removeAllViewsInLayout();
+            LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            for (final Repository repo : repos) {
+                TextView repoText = (TextView)vi.inflate(R.layout.repoitem, null);
+                repoText.setText(repo.getName());
+                repoText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent repoDetailsIntent = new Intent(RepoListActivity.this, RepoDetailsActivity.class);
+                        repoDetailsIntent.putExtra(RepoDetailsActivity.class.getCanonicalName(), repo);
+                        startActivity(repoDetailsIntent);
+                    }
+                });
+                layout.addView(repoText);
+            }
         }
     }
 

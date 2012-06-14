@@ -49,7 +49,6 @@ public class ClientActivity extends /*Template*/Activity implements View.OnClick
         switch (view.getId()) {
             case R.id.submitLogin: {
                 saveSettings();
-                startActivity(new Intent(this, RepoListActivity.class));
                 break;
             }
             default: {
@@ -63,6 +62,7 @@ public class ClientActivity extends /*Template*/Activity implements View.OnClick
             editor.putString("savedLogin", loginEdit.getText().toString());
             editor.putString("savedPassword", passwordEdit.getText().toString());
             editor.commit();
+            startActivity(new Intent(this, RepoListActivity.class));
             finish();
     }
 }
