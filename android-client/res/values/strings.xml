@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Check my hub!</string>
     <string name="activity_caption_client">gitHub client</string>
-    <string name="caption_button_get">Get repos!</string>
+    <string name="caption_button_get">Save credentials</string>
     <string name="caption_button_commits">See commits for this repo</string>
     <string name="reload">Reload from server</string>
     <string name="repository_name_caption">repository name:</string>

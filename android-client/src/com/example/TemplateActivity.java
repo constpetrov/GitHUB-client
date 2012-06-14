@@ -58,6 +58,17 @@ public abstract class TemplateActivity extends Activity {
         if(repoCommits.size() == 0){
             repoCommits.putAll(readPersistentCommits());
         }
+        client = createClientFromPreferences();
+        if (!checkClient(client)){
+            startActivity(new Intent(getApplicationContext(), ClientActivity.class));
+        }
+    }
+
+    protected boolean checkClient(GitHubClient client) {
+        if(client == null || client.getUser() == null || client.getUser().equals("")){
+            return false;
+        }
+        return true;
     }
 
     protected Bitmap getUserPicture(GitHubClient client, String username) {
@@ -89,7 +100,7 @@ public abstract class TemplateActivity extends Activity {
     }
 
     protected GitHubClient createClientFromPreferences() {
-        if(client == null){
+        if(!checkClient(client)){
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             String login = prefs.getString("savedLogin", "");
             String password = prefs.getString("savedPassword", "");
@@ -260,7 +271,7 @@ public abstract class TemplateActivity extends Activity {
         boolean result = super.onCreateOptionsMenu(menu);
         MenuItem m;
 
-        if(! (this instanceof ClientActivity) && ! (this instanceof RepoDetailsActivity)){
+        if(! (this instanceof RepoDetailsActivity)){
             m = menu.add(0, REFRESH_MENU_ITEM, 0, R.string.reload);
             m.setIcon(R.drawable.ic_menu_refresh);
         }

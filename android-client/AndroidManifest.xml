@@ -4,10 +4,6 @@
     <uses-sdk android:minSdkVersion="8"/>
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:name=".ClientActivity" android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".ReceiveOAuthActivity" android:noHistory="true">
             <intent-filter>
@@ -17,7 +13,12 @@
                 <data android:scheme="android-client" android:host="oauth.done"></data>
             </intent-filter>
         </activity>
-        <activity android:name=".RepoListActivity" android:label="@string/activity_caption_list"/>
+        <activity android:name=".RepoListActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".RepoDetailsActivity" android:label="@string/activity_caption_details"/>
         <activity android:name=".CommitActivity" android:label="@string/activity_caption_commits"/>
     </application>

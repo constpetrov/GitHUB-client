@@ -33,11 +33,18 @@ public class RepoListActivity extends TemplateActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
-        layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
-        ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
-        GitHubClient client = createClientFromPreferences();
-        task = new GetRepoListTask();
-        task.execute(client, false);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(checkClient(client)){
+            layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
+            ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
+            task = new GetRepoListTask();
+            task.execute(client, false);
+        }
     }
 
     private void createRepoList(Collection<Repository> repos, LinearLayout layout) {

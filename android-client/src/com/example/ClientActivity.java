@@ -24,11 +24,10 @@ import java.io.IOException;
  * Time: 21:15
  * To change this template use File | Settings | File Templates.
  */
-public class ClientActivity extends TemplateActivity implements View.OnClickListener {
+public class ClientActivity extends /*Template*/Activity implements View.OnClickListener {
     private EditText loginEdit;
     private EditText passwordEdit;
     private Button submitLogin;
-    private CheckBox saveCred;
     private SharedPreferences prefs;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -38,18 +37,11 @@ public class ClientActivity extends TemplateActivity implements View.OnClickList
         passwordEdit = (EditText) findViewById(R.id.passwordEdit);
         submitLogin = (Button) findViewById(R.id.submitLogin);
         submitLogin.setOnClickListener(this);
-        saveCred = (CheckBox)findViewById(R.id.saveCredentials);
 
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         loginEdit.setText(prefs.getString("savedLogin", ""));
         passwordEdit.setText(prefs.getString("savedPassword",""));
-        saveCred.setChecked(prefs.getBoolean("saveCred",false));
-    }
-
-    @Override
-    protected AsyncTask getNewTask() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -67,12 +59,10 @@ public class ClientActivity extends TemplateActivity implements View.OnClickList
     }
 
     private void saveSettings() {
-        if(saveCred.isChecked()){
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("saveCred", true);
             editor.putString("savedLogin", loginEdit.getText().toString());
             editor.putString("savedPassword", passwordEdit.getText().toString());
             editor.commit();
-        }
+            finish();
     }
 }
