@@ -55,9 +55,4 @@ public class RepoDetailsActivity extends TemplateActivity {
         LinearLayout layout = (LinearLayout)findViewById(R.id.repoDetailsLayout);
         layout.addView(createUserRow(), 0);
     }
-
-    @Override
-    protected AsyncTask getNewTask() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

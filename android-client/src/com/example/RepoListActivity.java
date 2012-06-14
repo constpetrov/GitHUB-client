@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import org.eclipse.egit.github.core.Repository;
@@ -33,18 +34,19 @@ public class RepoListActivity extends TemplateActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.repolist);
-
+        if(checkClient(client)){
+            layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
+            ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
+            GetRepoListTask task = new GetRepoListTask();
+            task.execute(client, false);
+        }else {
+            finish();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(checkClient(client)){
-            layout = (LinearLayout) findViewById(R.id.repoItemsContainer);
-            ((LinearLayout)findViewById(R.id.repoList)).addView(createUserRow(),0);
-            task = new GetRepoListTask();
-            task.execute(client, false);
-        }
     }
 
     private void createRepoList(Collection<Repository> repos, LinearLayout layout) {
@@ -84,6 +86,7 @@ public class RepoListActivity extends TemplateActivity {
                     repos.addAll(service.getRepositories());
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while getting list of repositories");
+//                    generateIOExceptionToast();
                 }
                 userRepos.put(client.getUser(), repos);
                 try {
@@ -112,9 +115,16 @@ public class RepoListActivity extends TemplateActivity {
 
     }
 
-    protected AsyncTask getNewTask(){
-        return new GetRepoListTask();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case REFRESH_MENU_ITEM:
+                GetRepoListTask task = new GetRepoListTask();
+                task.execute(client, Boolean.TRUE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
-
 
 }

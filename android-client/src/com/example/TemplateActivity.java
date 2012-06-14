@@ -45,7 +45,6 @@ public abstract class TemplateActivity extends Activity {
     protected final static Object persistenceFileLock = new Object();
     private static final String PROGRAM_MAIN_FOLDER = "/github-client";
     protected static GitHubClient client;
-    AsyncTask task;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -278,19 +277,7 @@ public abstract class TemplateActivity extends Activity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case REFRESH_MENU_ITEM:
-                task = getNewTask();
-                task.execute(client, true);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
-    protected abstract AsyncTask getNewTask();
 
     protected LinearLayout createUserRow() {
         LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -315,6 +302,10 @@ public abstract class TemplateActivity extends Activity {
             }
         });
         return data;
+    }
+
+    protected void generateIOExceptionToast(){
+        Toast.makeText(getApplicationContext(), "Please, check internet connection,\nlogin and password.", Toast.LENGTH_LONG);
     }
 
 }

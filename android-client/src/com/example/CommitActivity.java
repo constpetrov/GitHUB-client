@@ -44,6 +44,7 @@ public class CommitActivity extends TemplateActivity {
             return commits;
         } catch (IOException e) {
             Log.e(TAG, "IOException while getting commits history for repository "+ repository.getName());
+//            generateIOExceptionToast();
             return new LinkedList<RepositoryCommit>();
         }
     }
@@ -120,8 +121,14 @@ public class CommitActivity extends TemplateActivity {
     }
 
     @Override
-    protected AsyncTask getNewTask() {
-        return new GetCommitsListTask();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case REFRESH_MENU_ITEM:
+                GetCommitsListTask task = new GetCommitsListTask();
+                task.execute(client, Boolean.TRUE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
-
 }
