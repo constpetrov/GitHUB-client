@@ -26,7 +26,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class RepoListActivity extends TemplateActivity {
-    private static final String TAG = "RepoList";
+    private static final String TAG = "github-client/RepoList";
     LinearLayout layout;
 
     private boolean RELOAD_FROM_SERVER;
@@ -45,8 +45,14 @@ public class RepoListActivity extends TemplateActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(checkClient(client)){
+            GetRepoListTask task = new GetRepoListTask();
+            task.execute(client, false);
+        }else {
+            finish();
+        }
     }
 
     private void createRepoList(Collection<Repository> repos, LinearLayout layout) {
@@ -75,7 +81,7 @@ public class RepoListActivity extends TemplateActivity {
             Boolean reloadFromServer = (Boolean)objects[1];
             GitHubClient client = (GitHubClient) objects[0];
             LinkedList<Repository> repos = userRepos.get(client.getUser());
-            if(repos == null || reloadFromServer){
+            if(repos == null || repos.size() == 0|| reloadFromServer){
                 userPics.clear();
                 repos = new LinkedList<Repository>();
 
@@ -86,9 +92,19 @@ public class RepoListActivity extends TemplateActivity {
                     repos.addAll(service.getRepositories());
                 } catch (IOException e) {
                     Log.e(TAG, "IOException while getting list of repositories");
-//                    generateIOExceptionToast();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(dialog != null){
+                                dialog.dismiss();
+                            }
+                            generateIOExceptionToast();
+                        }
+                    });
                 }
-                userRepos.put(client.getUser(), repos);
+                if(repos.size() != 0){
+                    userRepos.put(client.getUser(), repos);
+                }
                 try {
                     savePersistentRepos();
                 } catch (IOException e) {
@@ -106,8 +122,7 @@ public class RepoListActivity extends TemplateActivity {
 
         @Override
         protected void onPostExecute(LinkedList<Repository> o) {
-            createUserRow();
-            createRepoList(o, layout);
+            createRepoList(userRepos.get(client.getUser()), layout);
             dialog.dismiss();
             super.onPostExecute(o);
         }

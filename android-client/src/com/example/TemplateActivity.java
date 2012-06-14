@@ -280,6 +280,7 @@ public abstract class TemplateActivity extends Activity {
 
 
     protected LinearLayout createUserRow() {
+        userPics.putAll(readPersistentPics());
         LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout data = (LinearLayout)vi.inflate(R.layout.userdata, null);
 
@@ -305,7 +306,7 @@ public abstract class TemplateActivity extends Activity {
     }
 
     protected void generateIOExceptionToast(){
-        Toast.makeText(getApplicationContext(), "Please, check internet connection,\nlogin and password.", Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(), "Please, check internet connection,\nlogin and password.", Toast.LENGTH_LONG).show();
     }
 
 }

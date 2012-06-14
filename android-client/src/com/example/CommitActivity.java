@@ -26,8 +26,9 @@ import java.util.*;
  */
 public class CommitActivity extends TemplateActivity {
     private Repository repository;
-    private static final String TAG = "CommitActivity";
+    private static final String TAG = "github-client/CommitActivity";
     private final float TEXT_SIZE = 16;
+    private ProgressDialog dialog;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         repository = (Repository) getIntent().getSerializableExtra(CommitActivity.class.getCanonicalName());
@@ -44,7 +45,16 @@ public class CommitActivity extends TemplateActivity {
             return commits;
         } catch (IOException e) {
             Log.e(TAG, "IOException while getting commits history for repository "+ repository.getName());
-//            generateIOExceptionToast();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(dialog != null){
+                        dialog.dismiss();
+                    }
+                    generateIOExceptionToast();
+
+                }
+            });
             return new LinkedList<RepositoryCommit>();
         }
     }
@@ -84,16 +94,18 @@ public class CommitActivity extends TemplateActivity {
 
     private class GetCommitsListTask extends AsyncTask<Object, Integer, LinkedList<RepositoryCommit>> {
         private LinkedList<RepositoryCommit> commits;
-        private ProgressDialog dialog;
+
         @Override
         protected LinkedList<RepositoryCommit> doInBackground(Object... objects) {
             Repository repository = (Repository)objects[0];
             Boolean reloadFromServer = (Boolean)objects[1];
             commits = repoCommits.get(repository.getName());
-            if(commits == null || reloadFromServer){
+            if(commits == null || commits.size() == 0 || reloadFromServer){
                 userPics.clear();
                 commits = loadCommits((Repository)objects[0]);
-                repoCommits.put(repository.getName(), commits);
+                if(commits.size() != 0){
+                    repoCommits.put(repository.getName(), commits);
+                }
                 try {
                     savePersistentCommits();
                 } catch (IOException e) {
@@ -125,7 +137,7 @@ public class CommitActivity extends TemplateActivity {
         switch (item.getItemId()) {
             case REFRESH_MENU_ITEM:
                 GetCommitsListTask task = new GetCommitsListTask();
-                task.execute(client, Boolean.TRUE);
+                task.execute(repository, Boolean.TRUE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
