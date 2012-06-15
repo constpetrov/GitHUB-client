@@ -8,8 +8,8 @@ This is a simple android application for browse GitHub repositories information 
 * browse commits history with hashes and descriptions
 
 ### screenshots
-[![Check my HUB icon](GitHUB-client/screenshots/screenshot01.png)](GitHUB-client/screenshots/screenshot01.png)
-[![login/password](GitHUB-client/screenshots/screenshot02.png)](GitHUB-client/screenshots/screenshot02.png)
-[![repositories list](GitHUB-client/screenshots/screenshot03.png)](GitHUB-client/screenshots/screenshot03.png)
-[![reposirory details](GitHUB-client/screenshots/screenshot04.png)](GitHUB-client/screenshots/screenshot04.png)
-[![commits history](GitHUB-client/screenshots/screenshot05.png)](GitHUB-client/screenshots/screenshot05.png)
+![Check my HUB icon](screenshots/screenshot01.png)
+![login/password](screenshots/screenshot02.png)
+![repositories list](screenshots/screenshot03.png)
+![reposirory details](screenshots/screenshot04.png)
+![commits history](screenshots/screenshot05.png)
